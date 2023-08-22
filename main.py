@@ -2,7 +2,7 @@ import pygame
 import random
 
 # Configurações do jogo
-WIDTH, HEIGHT = 400, 400
+WIDTH, HEIGHT = 400, 600
 GRID_SIZE = 30
 GRID_WIDTH, GRID_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
 WHITE = (255, 255, 255)
@@ -13,12 +13,12 @@ imagemfundo = pygame.image.load('imagem.jpg')
 # Definindo as peças Tetris
 pecas = [
     [[1, 1, 1, 1]],  # I
-    [[1, 1], [1, 1]],  # O
-    [[1, 1, 1], [0, 1, 0]],  # T
-    [[1, 1, 1], [1, 0, 0]],  # L
-    [[1, 1, 1], [0, 0, 1]],  # J
-    [[1, 1, 0], [0, 1, 1]],  # S
-    [[0, 1, 1], [1, 1, 0]]  # Z
+    #[[1, 1], [1, 1]],  # O
+    #[[1, 1, 1], [0, 1, 0]],  # T
+   # [[1, 1, 1], [1, 0, 0]],  # L
+   # [[1, 1, 1], [0, 0, 1]],  # J
+   # [[1, 1, 0], [0, 1, 1]],  # S
+   # [[0, 1, 1], [1, 1, 0]]  # Z
 ]
 
 # Função para criar uma peça aleatória
@@ -89,6 +89,14 @@ def remove_complete_lines(board):
     for line_index in lines_to_remove:
         del board[line_index]
         board.insert(0, [0] * GRID_WIDTH)
+#função para ganhar pontos toda vez que uma linha for removida
+def remove_complete_lines(board):
+    lines_to_remove = [i for i, row in enumerate(board) if all(row)]
+    points_earned = len(lines_to_remove) * 20  # Ganha 20 pontos para cada linha removida
+    for line_index in lines_to_remove:
+        del board[line_index]
+        board.insert(0, [0] * GRID_WIDTH)
+    return points_earned
 
 # Função principal
 def main():
@@ -98,6 +106,7 @@ def main():
     peca = nova_peca()
     
     x, y = GRID_WIDTH // 2 - len(peca[0]) // 2, 0
+    score = 0
 
     while True:
         for event in pygame.event.get():
@@ -118,11 +127,8 @@ def main():
         if keys[pygame.K_RIGHT]:
             if is_valid_position(board, peca, x + 1, y):
                 x += 1
-        if keys[pygame.K_DOWN]:
-            if is_valid_position(board, peca, x, y + 1):
-                y += 1
 
-        # Mover a peça para baixo automaticamente
+        # Movimentação automática para baixo
         if is_valid_position(board, peca, x, y + 1):
             y += 1
         else:
@@ -131,15 +137,25 @@ def main():
                 for col in range(len(peca[row])):
                     if peca[row][col] == 1:
                         board[y + row][x + col] = 1
-            remove_complete_lines(board)
+
+            lines_removed = remove_complete_lines(board)
+            score += lines_removed  # Atualiza a pontuação com as linhas removidas
+            
             peca = nova_peca()
             x, y = GRID_WIDTH // 2 - len(peca[0]) // 2, 0
 
+        if keys[pygame.K_DOWN]:
+            if is_valid_position(board, peca, x, y + 1):
+                y += 1
 
-        screen.blit(imagemfundo, (0,0))
+        screen.fill(BLACK)
         draw_grid()
         draw_board(board)
         desenhar_peca(peca, x * GRID_SIZE, y * GRID_SIZE)
+
+        font = pygame.font.Font(None, 36)
+        score_text = font.render("Pontuação: " + str(score), True, WHITE)
+        screen.blit(score_text, (10, 10))
 
         pygame.display.flip()
         clock.tick(4)
