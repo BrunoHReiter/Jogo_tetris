@@ -2,7 +2,7 @@ import pygame
 import random
 
 # Configurações do jogo
-WIDTH, HEIGHT = 400, 600
+WIDTH, HEIGHT = 400, 800
 GRID_SIZE = 30
 GRID_WIDTH, GRID_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
 WHITE = (255, 255, 255)
@@ -13,12 +13,12 @@ imagemfundo = pygame.image.load('imagem.jpg')
 # Definindo as peças Tetris
 pecas = [
     [[1, 1, 1, 1]],  # I
-    #[[1, 1], [1, 1]],  # O
-    #[[1, 1, 1], [0, 1, 0]],  # T
-   # [[1, 1, 1], [1, 0, 0]],  # L
-   # [[1, 1, 1], [0, 0, 1]],  # J
-   # [[1, 1, 0], [0, 1, 1]],  # S
-   # [[0, 1, 1], [1, 1, 0]]  # Z
+    [[1, 1], [1, 1]],  # O
+    [[1, 1, 1], [0, 1, 0]],  # T
+    [[1, 1, 1], [1, 0, 0]],  # L
+    [[1, 1, 1], [0, 0, 1]],  # J
+    [[1, 1, 0], [0, 1, 1]],  # S
+    [[0, 1, 1], [1, 1, 0]]  # Z
 ]
 
 # Função para criar uma peça aleatória
@@ -89,6 +89,7 @@ def remove_complete_lines(board):
     for line_index in lines_to_remove:
         del board[line_index]
         board.insert(0, [0] * GRID_WIDTH)
+
 #função para ganhar pontos toda vez que uma linha for removida
 def remove_complete_lines(board):
     lines_to_remove = [i for i, row in enumerate(board) if all(row)]
@@ -147,6 +148,16 @@ def main():
         if keys[pygame.K_DOWN]:
             if is_valid_position(board, peca, x, y + 1):
                 y += 1
+
+        # Verifica se a peça chegou ao topo do tabuleiro
+        if y <= 0:
+            font = pygame.font.Font(None, 72)
+            game_over_text = font.render("Game Over", True, WHITE)
+            screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+            pygame.display.flip()
+            pygame.time.delay(1000)  # Aguarda 10 segundos antes de encerrar o jogo
+            pygame.quit()
+            exit()
 
         screen.fill(BLACK)
         draw_grid()
