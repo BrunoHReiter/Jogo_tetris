@@ -9,7 +9,6 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 imagemfundo = pygame.image.load('imagem.jpg')
 
-
 # Definindo as peças Tetris
 pecas = [
     [[1, 1, 1, 1]],  # I
@@ -83,14 +82,7 @@ def desenhar_peca(peca, x, y):
                     ),
                 )
 
-# Função para remover linhas completas
-def remove_complete_lines(board):
-    lines_to_remove = [i for i, row in enumerate(board) if all(row)]
-    for line_index in lines_to_remove:
-        del board[line_index]
-        board.insert(0, [0] * GRID_WIDTH)
-
-#função para ganhar pontos toda vez que uma linha for removida
+# Função para remover linhas completas e ganhar pontos
 def remove_complete_lines(board):
     lines_to_remove = [i for i, row in enumerate(board) if all(row)]
     points_earned = len(lines_to_remove) * 20  # Ganha 20 pontos para cada linha removida
@@ -100,12 +92,15 @@ def remove_complete_lines(board):
     return points_earned
 
 # Função principal
+# Função principal
 def main():
     clock = pygame.time.Clock()
 
+    # Inicialização do tabuleiro vazio e da primeira peça
     board = [[0] * GRID_WIDTH for _ in range(GRID_HEIGHT)]
     peca = nova_peca()
-    
+
+    # Posição inicial da peça
     x, y = GRID_WIDTH // 2 - len(peca[0]) // 2, 0
     score = 0
 
@@ -117,21 +112,28 @@ def main():
 
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_UP:
+                    # Tentativa de girar a peça
                     peca_rodada = rodar_peca(peca)
-                    if is_valid_position(board, peca_rodada, x, y):
+                    nova_x = x
+                    if is_valid_position(board, peca_rodada, nova_x, y):
                         peca = peca_rodada
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            if is_valid_position(board, peca, x - 1, y):
-                x -= 1
+            # Tentativa de mover a peça para a esquerda
+            nova_x = x - 1
+            if is_valid_position(board, peca, nova_x, y):
+                x = nova_x
         if keys[pygame.K_RIGHT]:
-            if is_valid_position(board, peca, x + 1, y):
-                x += 1
+            # Tentativa de mover a peça para a direita
+            nova_x = x + 1
+            if is_valid_position(board, peca, nova_x, y):
+                x = nova_x
 
-        # Movimentação automática para baixo
-        if is_valid_position(board, peca, x, y + 1):
-            y += 1
+        nova_y = y + 1
+        if is_valid_position(board, peca, x, nova_y):
+            # Tentativa de mover a peça para baixo
+            y = nova_y
         else:
             # Fixar a peça no tabuleiro e pegar uma nova peça
             for row in range(len(peca)):
@@ -139,26 +141,32 @@ def main():
                     if peca[row][col] == 1:
                         board[y + row][x + col] = 1
 
+            # Verificar e remover linhas completas, atualizar pontuação
             lines_removed = remove_complete_lines(board)
-            score += lines_removed  # Atualiza a pontuação com as linhas removidas
-            
+            score += lines_removed
+
+            # Pegar uma nova peça e definir sua posição inicial
             peca = nova_peca()
             x, y = GRID_WIDTH // 2 - len(peca[0]) // 2, 0
 
         if keys[pygame.K_DOWN]:
-            if is_valid_position(board, peca, x, y + 1):
-                y += 1
+            # Tentativa de mover a peça para baixo manualmente
+            nova_y = y + 1
+            if is_valid_position(board, peca, x, nova_y):
+                y = nova_y
 
-        # Verifica se a peça chegou ao topo do tabuleiro
-        if y <= 0:
+        if any(board[row + y][col + x] == 1 for row in range(len(peca)) for col in range(len(peca[row])) if peca[row][col] == 1):
+            # Verificar se a peça atingiu o topo do tabuleiro
             font = pygame.font.Font(None, 72)
             game_over_text = font.render("Game Over", True, WHITE)
-            screen.blit(game_over_text, (WIDTH // 2 - game_over_text.get_width() // 2, HEIGHT // 2 - game_over_text.get_height() // 2))
+            text_rect = game_over_text.get_rect(center=(WIDTH // 2, HEIGHT // 2))
+            screen.blit(game_over_text, text_rect)
             pygame.display.flip()
-            pygame.time.delay(1000)  # Aguarda 10 segundos antes de encerrar o jogo
+            pygame.time.delay(1000)
             pygame.quit()
             exit()
 
+        # Limpar a tela, desenhar o tabuleiro, peça e informações
         screen.fill(BLACK)
         draw_grid()
         draw_board(board)
@@ -171,6 +179,7 @@ def main():
         pygame.display.flip()
         clock.tick(4)
 
+# Inicialização do pygame e configuração da tela
 if __name__ == "__main__":
     pygame.init()
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
