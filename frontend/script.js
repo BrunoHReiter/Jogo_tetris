@@ -9,7 +9,7 @@ $(function (){
         dataType: "json",
         success: listar,
         error: function () {
-            alert("Erro de conexão com o back-end!")
+            alert("Erro ao conectar com o back-end!")
         }
     });
 
@@ -30,6 +30,3 @@ $(function (){
     }
 });
 
-$(document).on("click", "#refresh", function(){
-    location.reload()
-});
