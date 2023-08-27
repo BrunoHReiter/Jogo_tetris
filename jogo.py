@@ -7,7 +7,7 @@ GRID_SIZE = 30
 GRID_WIDTH, GRID_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-imagemfundo = pygame.image.load('imagem.jpg')
+#imagemfundo = pygame.image.load('imagem.jpg')
 
 # Definindo as peças Tetris
 pecas = [
@@ -120,19 +120,19 @@ def main():
 
         keys = pygame.key.get_pressed()
         if keys[pygame.K_LEFT]:
-            # Tentativa de mover a peça para a esquerda
+            # Mover a peça para a esquerda
             nova_x = x - 1
             if is_valid_position(board, peca, nova_x, y):
                 x = nova_x
         if keys[pygame.K_RIGHT]:
-            # Tentativa de mover a peça para a direita
+            # Mover a peça para a direita
             nova_x = x + 1
             if is_valid_position(board, peca, nova_x, y):
                 x = nova_x
 
         nova_y = y + 1
         if is_valid_position(board, peca, x, nova_y):
-            # Tentativa de mover a peça para baixo
+            # Mover a peça para baixo
             y = nova_y
         else:
             # Fixar a peça no tabuleiro e pegar uma nova peça
@@ -150,7 +150,7 @@ def main():
             x, y = GRID_WIDTH // 2 - len(peca[0]) // 2, 0
 
         if keys[pygame.K_DOWN]:
-            # Tentativa de mover a peça para baixo manualmente
+            # Mover a peça para baixo manualmente
             nova_y = y + 1
             if is_valid_position(board, peca, x, nova_y):
                 y = nova_y
