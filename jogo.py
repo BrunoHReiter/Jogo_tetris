@@ -1,5 +1,6 @@
 import pygame
 import random
+import requests
 
 # Configurações do jogo
 WIDTH, HEIGHT = 400, 800
@@ -7,7 +8,9 @@ GRID_SIZE = 30
 GRID_WIDTH, GRID_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
-#imagemfundo = pygame.image.load('imagem.jpg')
+
+# URL pra mandar para o BD 
+URL = "http://localhost:5000/incluir/Score"
 
 # Definindo as peças Tetris
 pecas = [
@@ -92,7 +95,6 @@ def remove_complete_lines(board):
     return points_earned
 
 # Função principal
-# Função principal
 def main():
     clock = pygame.time.Clock()
 
@@ -163,8 +165,13 @@ def main():
             screen.blit(game_over_text, text_rect)
             pygame.display.flip()
             pygame.time.delay(1000)
+            # Manda os pontos para o BD sempre que chegar no topo do tabuleiro
+            data = {"pontos": score}
+            send_data = requests.post(URL, json=data)
+            print(send_data.text)
             pygame.quit()
             exit()
+
 
         # Limpar a tela, desenhar o tabuleiro, peça e informações
         screen.fill(BLACK)
