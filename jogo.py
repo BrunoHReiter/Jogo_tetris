@@ -9,6 +9,9 @@ GRID_WIDTH, GRID_HEIGHT = WIDTH // GRID_SIZE, HEIGHT // GRID_SIZE
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
+bg = pygame.image.load("foto_resized.png")
+
+
 # URL pra mandar para o BD 
 URL = "http://localhost:5000/incluir/Score"
 
@@ -174,7 +177,7 @@ def main():
 
 
         # Limpar a tela, desenhar o tabuleiro, peça e informações
-        screen.fill(BLACK)
+        screen.blit(bg, (0, 0))
         draw_grid()
         draw_board(board)
         desenhar_peca(peca, x * GRID_SIZE, y * GRID_SIZE)
